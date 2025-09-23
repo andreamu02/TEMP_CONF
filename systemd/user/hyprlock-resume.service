@@ -1,0 +1,11 @@
+[Unit]
+Description=Lock Hyprland on resume
+After=suspend.target hibernate.target hybrid-sleep.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/hyprctl dispatch exec hyprlock
+
+[Install]
+WantedBy=default.target
+

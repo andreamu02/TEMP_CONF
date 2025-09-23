@@ -1,0 +1,40 @@
+[2025-09-22 13:23:50.160] [info]  No state version found, assuming empty state.
+[2025-09-22 13:23:50.423] [info]  Coredumps are disabled in renderer process
+[2025-09-22 13:23:50.424] [info]  Disabling memory dumps in main process
+[2025-09-22 13:23:51.760] [info]  [Native Messaging IPC] Clearing connected apps
+[2025-09-22 13:23:51.763] [info]  State version: 72
+[2025-09-22 13:23:52.047] [info]  Retrieving application id
+[2025-09-22 13:24:07.182] [info]  Retrieving application id
+[2025-09-22 13:24:15.175] [info]  Retrieving application id
+[2025-09-22 13:24:15.231] [info]  Retrieving application id
+[2025-09-22 13:24:19.951] [info]  Retrieving application id
+[2025-09-22 13:24:21.128] [info]  [KeyService] Deriving master key took 1126ms
+[2025-09-22 13:24:21.144] [info]  Retrieving application id
+[2025-09-22 13:24:21.838] [error] [Credential Storage Listener] getPassword failed Error: service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:21.859] [error] [Credential Storage Listener] setPassword failed Error: DBus error service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:21.876] [error] [Credential Storage Listener] getPassword failed Error: service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:21.879] [error] SetAccessToken: storing encrypted access token in secure storage failed. Falling back to disk storage. Error: New Access token key unable to be retrieved from secure storage.
+[2025-09-22 13:24:21.900] [error] [Credential Storage Listener] setPassword failed Error: DBus error service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:21.924] [error] [Credential Storage Listener] getPassword failed Error: service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:21.927] [error] SetRefreshToken: storing refresh token in secure storage failed. Falling back to disk storage. Error: Refresh token failed to save to secure storage.
+[2025-09-22 13:24:22.096] [info]  Using SignalR for notifications
+[2025-09-22 13:24:22.141] [error] [Credential Storage Listener] getPassword failed Error: service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:22.149] [error] [Credential Storage Listener] getPassword failed Error: service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:22.191] [error] [Credential Storage Listener] getPassword failed Error: service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:22.196] [error] [Credential Storage Listener] getPassword failed Error: service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:22.214] [error] [Credential Storage Listener] deletePassword failed Error: DBus error service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:22.247] [info]  [SignalR] WebSocket connected to wss://vw.casadbm.duckdns.org/notifications/hub?access_token=[REDACTED]
+[2025-09-22 13:24:22.248] [error] [Credential Storage Listener] getPassword failed Error: service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:22.250] [info]  [SignalR] Using HubProtocol 'messagepack'.
+[2025-09-22 13:24:22.374] [error] [Credential Storage Listener] getPassword failed Error: service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:22.421] [error] [Credential Storage Listener] getPassword failed Error: service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:22.911] [error] [Credential Storage Listener] getPassword failed Error: service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:23.499] [error] [Credential Storage Listener] getPassword failed Error: service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:23.583] [info]  [SearchService]: isSearchable took 34 undefined
+[2025-09-22 13:24:23.618] [error] [Credential Storage Listener] getPassword failed Error: service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:23.809] [error] [Credential Storage Listener] getPassword failed Error: service error org.freedesktop.zbus.Error: The name is not activatable
+[2025-09-22 13:24:23.928] [info]  [CipherService]: decrypt complete took 120.19999999925494 [ [ 'Items', 227 ] ]
+[2025-09-22 13:24:24.114] [info]  [SearchService]: index complete took 167.59999999962747 [ [ 'Items', 227 ] ]
+[2025-09-22 13:24:24.194] [info]  [SearchService]: isSearchable took 27 undefined
+[2025-09-22 13:24:24.326] [info]  [SearchService]: index complete took 131.7999999988824 [ [ 'Items', 227 ] ]
+[2025-09-22 13:24:28.521] [info]  Autotype disabled.

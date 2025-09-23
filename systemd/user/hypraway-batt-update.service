@@ -1,0 +1,6 @@
+[Unit]
+Description=Update Hypraway combined battery status
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/update_hypraway_battery_status.sh

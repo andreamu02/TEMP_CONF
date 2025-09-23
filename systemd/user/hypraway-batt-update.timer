@@ -1,0 +1,10 @@
+[Unit]
+Description=Run hypraway-batt-update every 5s
+
+[Timer]
+OnBootSec=2s
+OnUnitActiveSec=5s
+Persistent=true
+
+[Install]
+WantedBy=timers.target
