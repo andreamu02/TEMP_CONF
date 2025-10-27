@@ -8,6 +8,8 @@ vim.env.PATH = vim.env.HOME .. '/.local/share/nvim/mason/bin:' .. vim.env.PATH
 vim.g.mapleader = ","
 vim.g.maplocalleader = ","
 
+vim.mouse = "r"
+
 
 -- Bootstrap lazy.nvim (follows folke's recommended bootstrap)
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -63,6 +65,8 @@ require('lazy').setup({
 
   -- Git signs
   { 'lewis6991/gitsigns.nvim', dependencies = { 'nvim-lua/plenary.nvim' } },
+
+  { "lepture/vim-jinja" },
 
   { 'norcalli/nvim-colorizer.lua' },
 
@@ -168,7 +172,7 @@ require("mini.indentscope").setup({
 -- === Basic plugin setups ===
 -- Treesitter
 require('nvim-treesitter.configs').setup {
-  ensure_installed = { 'c', 'cpp', 'lua', 'rust', 'toml', 'json', 'bash', 'python' },
+  ensure_installed = { 'c', 'cpp', 'lua', 'rust', 'toml', 'json', 'bash', 'python', 'html', 'javascript', 'css' },
   highlight = { enable = true },
   indent = { enable = true },
 }
@@ -211,7 +215,7 @@ require('lualine').setup {
 require('gitsigns').setup()
 
 require('colorizer').setup(
-      { "css", "scss", "html", "javascript", "typescript", "lua", "rust", "toml", "yaml", "json", "sh", "bash", "conf" }, -- highlight colors in all filetypes; change to a list for better perf (see note)
+      { "css", "scss", "html", "javascript", "typescript", "lua", "rust", "toml", "yaml", "json", "sh", "bash", "conf", "jinja", "htmldjango", "jinja.html" }, -- highlight colors in all filetypes; change to a list for better perf (see note)
       {
         -- colorizer options
         RGB = true,        -- #RGB hex codes
@@ -426,9 +430,27 @@ end
 require("conform").setup({
   formatters_by_ft = {
     python = { "ruff" , "black" }, -- conform will call the tools you have available
+    ["htmldjango"] = { "djlint" },
+    ["jinja.html"] = { "djlint" },
   },
 })
--- optional: autoformat on save
+
+-- Autoformat templates on save (tries conform, then falls back to djlint CLI)
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = {"*.j2","*.jinja","*.jinja2","*.html.j2","*.htmldjango","*.jinja"},
+  callback = function()
+    local ok_conf, conform = pcall(require, "conform")
+    if ok_conf and conform then
+      local ok_fmt, _ = pcall(conform.format, { async = false })
+      if ok_fmt then return end
+    end
+    if vim.fn.executable("djlint") == 1 then
+      local view = vim.fn.winsaveview()
+      local ok, _ = pcall(vim.cmd, "%!djlint -")
+      if ok then vim.fn.winrestview(view) end
+    end
+  end,
+})-- optional: autoformat on save
 vim.api.nvim_create_autocmd("BufWritePre", {
   pattern = {"*.py"},
   callback = function() require("conform").format({ async = false }) end,
@@ -613,6 +635,9 @@ vim.cmd("colorscheme catppuccin")
 
 vim.cmd([[
   autocmd CursorHold,CursorHoldI * lua require('nvim-lightbulb').update_lightbulb()
+  hi Normal guibg=NONE
+  hi NormalNC guibg=NONE
+  hi VertSplit guibg=NONE
 ]])
 
 vim.o.encoding = "utf-8"

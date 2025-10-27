@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+
+# ---------- single-instance lock ----------
+# per-user lock file location (XDG_RUNTIME_DIR preferred)
+LOCK_DIR=${XDG_RUNTIME_DIR:-/tmp}
+LOCKFILE="$LOCK_DIR/color_picker.$UID.lock"
+
+# open lockfile on FD 200 and acquire an exclusive non-blocking lock
+# if another instance holds the lock, exit quietly (0)
+exec 200>"$LOCKFILE" || exit 0
+if ! flock -n 200; then
+  # another instance is running
+  exit 0
+fi
+
+# write PID into lockfile (optional — useful for debugging)
+printf '%s\n' "$$" >&200
+
+# ensure lock is released when the script exits (FD 200 closed automatically,
+# but we also remove the lockfile for cleanliness)
+cleanup() {
+  # close FD 200 (releases lock) and remove file
+  exec 200>&- || true
+  [ -f "$LOCKFILE" ] && rm -f "$LOCKFILE"
+}
+trap cleanup EXIT
+# ---------- end single-instance lock ----------
+
+
+
+THRESHOLD=128
+
+color=$(hyprpicker)
+if [ ! "$color" ]; then
+  exit 0
+fi
+
+color_check=$(printf '%s' "$color" | awk '/ERR/ {print $1}')
+if [ "$color_check" ]; then
+  color=$(printf '%s' "$color" | awk '/#[0-9A-Fa-f]{6,8}/ {print $1}')
+fi
+
+printf '%s' "$color" | xargs wl-copy
+
+rsvg-convert -w 32 -h 32 "/usr/share/icons/breeze-dark/actions/32/color-picker-black.svg" -o "/tmp/icon-resized.png"
+magick /tmp/icon-resized.png \( -clone 0 -fill "$color" -colorize 100 \) -compose multiply -composite /tmp/icon-colored.png
+
+h=${color#"#"}
+r=$((16#${h:0:2}))
+g=$((16#${h:2:2}))
+b=$((16#${h:4:2}))
+# perceived brightness (luma)
+brightness=$(awk -v R=$r -v G=$g -v B=$b 'BEGIN { printf "%d", (0.299*R + 0.587*G + 0.114*B) }')
+
+
+appname="col-picker-dark"
+# choose background color to contrast with picked color
+if [ "$brightness" -lt "$THRESHOLD" ]; then
+  appname="col-picker-light"
+fi
+
+if [ ! "$color" ]; then
+  exit 0
+fi
+
+notify-send -a "$appname" -i "/tmp/icon-colored.png" "Color: $color"
+

@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+pactl set-sink-mute @DEFAULT_SINK@ toggle
+value=$(pactl get-sink-mute @DEFAULT_SINK@)
+value_wout=${value:6}
+
+yes="yes"
+
+SYNC="string:x-canonical-private-synchronous:volume"
+
+parse_volumes_into_ref() {
+  declare -n _arr_ref=$1   # nameref to caller array
+  local data
+  data="$(pactl get-sink-volume @DEFAULT_SINK@ 2>/dev/null || true)"
+  _arr_ref=()
+
+  while [[ $data =~ ([0-9]+)% ]]; do
+    _arr_ref+=( "${BASH_REMATCH[1]}" )
+    data=${data#*"${BASH_REMATCH[0]}"}
+  done
+
+  if [ ${#_arr_ref[@]} -eq 0 ]; then
+    _arr_ref=(0)
+  fi
+}
+
+makoctl list \
+  | awk '/^Notification [0-9]+:/{match($0,/Notification ([0-9]+):/,m); id=m[1]}
+         /^\s*App name: (vol-control|vol-notify)\s*$/ {print id}' | xargs -r -n1 makoctl dismiss -n
+
+
+if [ "$value_wout" = "$yes" ]; then
+  notify-send -a "vol-notify" -i /usr/share/icons/breeze-dark/status/24/audio-volume-muted.svg -h "$SYNC" "" 
+else
+  icon=/usr/share/icons/breeze-dark/status/24/audio-volume-high-danger.svg 
+  
+  declare -a volumes
+  parse_volumes_into_ref volumes
+
+  volume=${volumes[-1]}
+  
+  if [ "$volume" -lt 33 ]; then
+    icon="/usr/share/icons/breeze-dark/status/24/audio-volume-low-symbolic.svg"
+  elif [ "$volume" -lt 67 ]; then
+    icon="/usr/share/icons/breeze-dark/status/24/audio-volume-medium-symbolic.svg"
+  elif [ "$volume" -lt 101 ]; then
+    icon="/usr/share/icons/breeze-dark/status/24/audio-volume-high-symbolic.svg"   
+  elif [ "$volume" -lt 130 ]; then
+    icon="/usr/share/icons/breeze-dark/status/24/audio-volume-high-warning-symbolic.svg"   
+  fi
+  
+  notify-send -a "vol-notify" -i "$icon" -h "$SYNC" ""
+fi

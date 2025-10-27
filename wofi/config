@@ -4,3 +4,4 @@ show-icons=true
 insensitive=true
 no_actions=true
 location=center
+layer=overlay

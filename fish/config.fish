@@ -26,6 +26,8 @@ set -gx FZF_DEFAULT_OPTS "--height=40% --layout=reverse --ansi \
 # --- zoxide (smart cd) ---
 zoxide init fish | source
 
+# fzf --fish | source
+
 # --- fzf keybindings (bash → fish) ---
 if test -f ~/.fzf/fish/key-bindings.fish
     source ~/.fzf/fish/key-bindings.fish
@@ -39,7 +41,7 @@ end
 # --- Functions (bash → fish) ---
 # Fuzzy select directory from zoxide
 function zfz
-    set dir (zoxide query -l | fzf +s --tiebreak=index --preview='ls -la {}')
+    set dir (zoxide query -l | fzf +s --tiebreak=index --preview='eza -la {}')
     if test -n "$dir"
         cd "$dir"
     end
@@ -47,7 +49,7 @@ end
 
 # Fuzzy cd using fd + fzf
 function fzfcd
-    set dir (fd --hidden --type d --exclude .git | fzf --height 40% --preview 'ls -la {}')
+    set dir (fd --hidden --type d --exclude .git | fzf --height 40% --preview 'eza -la {}')
     if test -n "$dir"
         cd "$dir"
     end
@@ -59,14 +61,22 @@ if test -f ~/.cargo/env.fish
 end
 
 # --- Hyprland autostart (bash if → fish) ---
-if test -z "$DISPLAY"; and test -z "$WAYLAND_DISPLAY"; and test (tty) = "/dev/tty1"
-    exec Hyprland
-end
+# if test -z "$DISPLAY"; and test -z "$WAYLAND_DISPLAY"; and test (tty) = "/dev/tty1"
+#    exec Hyprland
+# end
 
 # --- Misc vars ---
-set -gx HYPRSHOT_DIR ~/Downloads
+set -gx HYPRSHOT_DIR ~/Documents/screenshots
+
+set -x PATH $PATH /home/andre/.local/share/gem/ruby/3.4.0/bin
 
 # --- Abbreviations ---
 abbr vim nvim
 abbr cd z
 abbr gc 'git clone'
+abbr fzd fzfcd
+
+abbr wifion 'nmcli radio wifi on'
+abbr wifioff 'nmcli radio wifi off'
+
+alias sur='su -s /usr/bin/fish'

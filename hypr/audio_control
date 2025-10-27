@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+sign=$1
+
+if [ "$sign" = "plus" ]; then  
+  pactl set-sink-volume @DEFAULT_SINK@ +5%
+elif [ "$sign" = "minus" ]; then
+  pactl set-sink-volume @DEFAULT_SINK@ -5%
+else
+  echo -e "Error: missing argument\nUsage: audio_control [plus/minus]" >&2
+  exit 1
+fi
+
+value=$(pactl get-sink-volume @DEFAULT_SINK@ \
+  | awk '{for(i=1;i<=NF;i++) if($i ~ /%/) v=$i} END{gsub(/[^0-9]/,"",v); print v}')
+
+SYNC="string:x-canonical-private-synchronous:volume"
+
+makoctl list \
+  | awk '/^Notification [0-9]+:/{match($0,/Notification ([0-9]+):/,m); id=m[1]}
+         /^\s*App name: (vol-notify|mic-notify)\s*$/ {print id}' | xargs -r -n1 makoctl dismiss -n
+
+
+if [ "$value" -eq "0" ]; then
+  pactl set-sink-mute @DEFAULT_SINK@ 1
+  notify-send -a "vol-control" -i /usr/share/icons/breeze-dark/status/24/audio-volume-muted.svg --hint=int:value:"$value" -h "$SYNC" "$value% " "" 
+else
+  pactl set-sink-mute @DEFAULT_SINK@ 0
+  icon=/usr/share/icons/breeze-dark/status/24/audio-volume-high-danger.svg 
+  
+  body=""
+
+  if [ "$value" -lt 33 ]; then
+    icon="/usr/share/icons/breeze-dark/status/24/audio-volume-low-symbolic.svg"
+  elif [ "$value" -lt 67 ]; then
+    icon="/usr/share/icons/breeze-dark/status/24/audio-volume-medium-symbolic.svg"
+  elif [ "$value" -lt 101 ]; then
+    icon="/usr/share/icons/breeze-dark/status/24/audio-volume-high-symbolic.svg"   
+  elif [ "$value" -lt 130 ]; then
+    icon="/usr/share/icons/breeze-dark/status/24/audio-volume-high-warning-symbolic.svg"   
+    body="Volume Overload"
+    value=100
+  else  
+    body="Volume Overload"
+    if [ "$value" -gt 150 ]; then
+      pactl set-sink-volume @DEFAULT_SINK@ 150%
+    fi
+    value=100
+  fi
+  if [ "$value" -eq "100" ]; then
+    notify-send -a "vol-control" -i "$icon" --hint=int:value:"$value" -h "$SYNC" "$value%   " "$body"
+    echo ciao
+  elif [ "$value" -lt "10" ]; then
+    notify-send -a "vol-control" -i "$icon" --hint=int:value:"$value" -h "$SYNC" "$value% " "$body"
+  else
+    notify-send -a "vol-control" -i "$icon" --hint=int:value:"$value" -h "$SYNC" "$value%  " "$body"
+  fi
+fi
