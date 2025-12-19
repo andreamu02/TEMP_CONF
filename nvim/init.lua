@@ -29,5 +29,7 @@ require("myvim.completion")
 require("myvim.keymaps")
 require("myvim.autocmds")
 require("myvim.python")
+require("myvim.whichkey")
+require("myvim.runfiles")
 
 print('Neovim starter config loaded — enjoy coding in Rust!')

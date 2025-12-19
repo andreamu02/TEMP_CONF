@@ -1,4 +1,4 @@
--- ~/.config/nvim/lua/myvim/python.lua
+-- lua/myvim/python.lua
 
 local uv = vim.loop
 
@@ -39,11 +39,13 @@ end
 local function find_python_in_root(root_dir)
   root_dir = root_dir or find_project_root()
 
+  -- 1) VIRTUAL_ENV ereditato
   if vim.env.VIRTUAL_ENV and is_dir(vim.env.VIRTUAL_ENV) then
     local py = vim.fn.expand(vim.env.VIRTUAL_ENV .. "/bin/python")
     if is_file(py) then return py end
   end
 
+  -- 2) venv locali
   local local_candidates = { ".venv", "venv", "env" }
   for _, d in ipairs(local_candidates) do
     local candidate = root_dir .. "/" .. d .. "/bin/python"
@@ -52,6 +54,7 @@ local function find_python_in_root(root_dir)
     end
   end
 
+  -- 3) Poetry
   if is_file(root_dir .. "/pyproject.toml") and vim.fn.executable("poetry") == 1 then
     local cmd = "cd " .. vim.fn.shellescape(root_dir) .. " && poetry env info -p 2>/dev/null"
     local out = vim.fn.systemlist(cmd)
@@ -61,6 +64,7 @@ local function find_python_in_root(root_dir)
     end
   end
 
+  -- 4) Pipenv
   if is_file(root_dir .. "/Pipfile") and vim.fn.executable("pipenv") == 1 then
     local cmd = "cd " .. vim.fn.shellescape(root_dir) .. " && pipenv --py 2>/dev/null"
     local out = vim.fn.systemlist(cmd)
@@ -69,6 +73,7 @@ local function find_python_in_root(root_dir)
     end
   end
 
+  -- 5) pyenv
   if is_file(root_dir .. "/.python-version") and vim.fn.executable("pyenv") == 1 then
     local cmd = "cd " .. vim.fn.shellescape(root_dir) .. " && pyenv which python 2>/dev/null"
     local out = vim.fn.systemlist(cmd)
@@ -77,6 +82,7 @@ local function find_python_in_root(root_dir)
     end
   end
 
+  -- 6) Fallback sistema
   local py3 = vim.fn.exepath("python3")
   if py3 ~= "" then return py3 end
   local py = vim.fn.exepath("python")
@@ -85,6 +91,7 @@ local function find_python_in_root(root_dir)
   return "python"
 end
 
+-- Comando di debug manuale
 vim.api.nvim_create_user_command("ShowProjectPython", function(opts)
   local bufnr = tonumber(opts.args) or 0
   if bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
@@ -95,3 +102,8 @@ vim.api.nvim_create_user_command("ShowProjectPython", function(opts)
   print("project root:", root)
   print("python:", py)
 end, { nargs = "?" })
+
+return {
+  find_project_root = find_project_root,
+  find_python_in_root = find_python_in_root,
+}

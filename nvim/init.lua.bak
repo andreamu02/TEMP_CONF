@@ -35,7 +35,7 @@ vim.o.tabstop = 2
 vim.o.smartindent = true
 vim.o.swapfile = false
 vim.o.backup = false
-vim.o.undodir = vim.fn.stdpath('data')..'/undo'
+vim.o.undodir = vim.fn.stdpath('data') .. '/undo'
 vim.o.undofile = true
 -- Keymap helper
 local function map(mode, lhs, rhs, opts)
@@ -51,20 +51,20 @@ require('lazy').setup({
   { 'nvim-lua/popup.nvim' },
 
   -- Telescope (fuzzy finder)
-  { 'nvim-telescope/telescope.nvim', dependencies = { 'nvim-lua/plenary.nvim' } },
+  { 'nvim-telescope/telescope.nvim',   dependencies = { 'nvim-lua/plenary.nvim' } },
 
   -- Treesitter (syntax/indent/parsing)
   { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
-  { "nvim-tree/nvim-web-devicons", opts = {} },
+  { "nvim-tree/nvim-web-devicons",     opts = {} },
 
   -- File explorer
-  { 'nvim-neo-tree/neo-tree.nvim', branch = 'v3.x', dependencies = { 'nvim-lua/plenary.nvim', 'nvim-tree/nvim-web-devicons', 'MunifTanjim/nui.nvim' } },
+  { 'nvim-neo-tree/neo-tree.nvim',     branch = 'v3.x',                                 dependencies = { 'nvim-lua/plenary.nvim', 'nvim-tree/nvim-web-devicons', 'MunifTanjim/nui.nvim' } },
 
   -- Statusline
-  { 'nvim-lualine/lualine.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' } },
+  { 'nvim-lualine/lualine.nvim',       dependencies = { 'nvim-tree/nvim-web-devicons' } },
 
   -- Git signs
-  { 'lewis6991/gitsigns.nvim', dependencies = { 'nvim-lua/plenary.nvim' } },
+  { 'lewis6991/gitsigns.nvim',         dependencies = { 'nvim-lua/plenary.nvim' } },
 
   { "lepture/vim-jinja" },
 
@@ -95,7 +95,7 @@ require('lazy').setup({
 
   -- Rust: modern replacement for rust-tools (filetype plugin that auto-configures rust-analyzer)
   {
-  "mrcjkb/rustaceanvim",
+    "mrcjkb/rustaceanvim",
     ft = { "rust" },
     -- init runs *before* the plugin is loaded, so the plugin will observe vim.g.rustaceanvim
     init = function()
@@ -122,9 +122,9 @@ require('lazy').setup({
       vim.g.rustaceanvim = vim.tbl_deep_extend("keep", vim.g.rustaceanvim or {}, opts)
     end,
     -- no config = function() calling setup() — rustaceanvim reads vim.g.* itself
-},
-  { "echasnovski/mini.indentscope", version = false, event = { "BufReadPre", "BufNewFile" }, opts = {} },
-  { "kosayoda/nvim-lightbulb", dependencies = { "antoinemadec/FixCursorHold.nvim" }, config = true },
+  },
+  { "echasnovski/mini.indentscope", version = false,                                      event = { "BufReadPre", "BufNewFile" }, opts = {} },
+  { "kosayoda/nvim-lightbulb",      dependencies = { "antoinemadec/FixCursorHold.nvim" }, config = true },
 
   -- Sudo
   {
@@ -148,9 +148,12 @@ require('lazy').setup({
     end,
   },
 
-  { "s1n7ax/nvim-window-picker", config = function()
-    require("window-picker").setup()
-  end },
+  {
+    "s1n7ax/nvim-window-picker",
+    config = function()
+      require("window-picker").setup()
+    end
+  },
 
   { 'hrsh7th/nvim-cmp' },
   { 'hrsh7th/cmp-nvim-lsp' },
@@ -160,19 +163,22 @@ require('lazy').setup({
   { 'rafamadriz/friendly-snippets' },
   { 'tpope/vim-surround' },
   -- Convenience
-  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make', cond = vim.fn.executable('make') == 1 },
+  { 'nvim-telescope/telescope-fzf-native.nvim',   build = 'make',                                                                   cond = vim.fn.executable('make') == 1 },
   { 'nvim-telescope/telescope-file-browser.nvim', dependencies = { 'nvim-tree/nvim-web-devicons', 'nvim-telescope/telescope.nvim' } },
   -- Theme (pick one you like)
-  { 'catppuccin/nvim', name = 'catppuccin' },
-  { "numToStr/Comment.nvim", config = function()
-    require("Comment").setup()
-  end },
+  { 'catppuccin/nvim',                            name = 'catppuccin' },
+  {
+    "numToStr/Comment.nvim",
+    config = function()
+      require("Comment").setup()
+    end
+  },
   {
     "nxhung2304/lastplace.nvim",
     config = function()
-    require("lastplace").setup({
-      -- your configuration here
-    })
+      require("lastplace").setup({
+        -- your configuration here
+      })
     end,
   },
   {
@@ -180,8 +186,8 @@ require('lazy').setup({
     event = "InsertEnter",
     config = true
   },
-  { "stevearc/conform.nvim",    opts = {}, event = "BufWritePre" }, -- formatting
-  { "nvimtools/none-ls.nvim",  lazy = true },
+  { "stevearc/conform.nvim",  opts = {},  event = "BufWritePre" }, -- formatting
+  { "nvimtools/none-ls.nvim", lazy = true },
 })
 
 require("mini.indentscope").setup({
@@ -218,7 +224,7 @@ require("neo-tree").setup({
 
     -- Show hidden items
     filtered_items = {
-      visible = true,   -- Show hidden files like .git, .env, etc.
+      visible = true, -- Show hidden files like .git, .env, etc.
       hide_dotfiles = false,
       hide_gitignored = false,
     },
@@ -242,18 +248,19 @@ require('lualine').setup {
 require('gitsigns').setup()
 
 require('colorizer').setup(
-      { "css", "scss", "html", "javascript", "typescript", "lua", "rust", "toml", "yaml", "json", "sh", "bash", "conf", "jinja", "htmldjango", "jinja.html" }, -- highlight colors in all filetypes; change to a list for better perf (see note)
-      {
-        -- colorizer options
-        RGB = true,        -- #RGB hex codes
-        RRGGBB = true,     -- #RRGGBB hex codes
-        names = true,      -- "Name" codes like "Blue"
-        RRGGBBAA = true,   -- #RRGGBBAA hex codes
-        rgb_fn = true,     -- CSS rgb() and rgba() functions
-        hsl_fn = true,     -- CSS hsl() and hsla() functions
-        css = true,        -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
-        css_fn = true,     -- Enable all CSS *functions* (rgb_fn, hsl_fn)
-      }
+  { "css", "scss", "html", "javascript", "typescript", "lua", "rust", "toml", "yaml", "json", "sh", "bash", "conf",
+    "jinja", "htmldjango", "jinja.html" }, -- highlight colors in all filetypes; change to a list for better perf (see note)
+  {
+    -- colorizer options
+    RGB = true,      -- #RGB hex codes
+    RRGGBB = true,   -- #RRGGBB hex codes
+    names = true,    -- "Name" codes like "Blue"
+    RRGGBBAA = true, -- #RRGGBBAA hex codes
+    rgb_fn = true,   -- CSS rgb() and rgba() functions
+    hsl_fn = true,   -- CSS hsl() and hsla() functions
+    css = true,      -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+    css_fn = true,   -- Enable all CSS *functions* (rgb_fn, hsl_fn)
+  }
 )
 
 -- Telescope defaults
@@ -382,24 +389,24 @@ local mason_lspconfig = require("mason-lspconfig")
 mason_lspconfig.setup({
   ensure_installed = {
     -- Core languages
-    "lua_ls",                 -- Lua
-    "pyright",                -- Python
-    "bashls",                 -- Bash / Shell
-    "marksman",               -- Markdown
-    "clangd",                 -- C / C++
-    "ruby_lsp",               -- Ruby
-    "rust_analyzer",          -- Rust
+    "lua_ls",        -- Lua
+    "pyright",       -- Python
+    "bashls",        -- Bash / Shell
+    "marksman",      -- Markdown
+    "clangd",        -- C / C++
+    "ruby_lsp",      -- Ruby
+    "rust_analyzer", -- Rust
 
     -- Web / template
-    "html",                   -- HTML
-    "cssls",                  -- CSS / SCSS
-    "emmet_ls",               -- Emmet (HTML/CSS snippets)
+    "html",     -- HTML
+    "cssls",    -- CSS / SCSS
+    "emmet_ls", -- Emmet (HTML/CSS snippets)
     "ts_ls",
     "intelephense",
     "texlab",
 
     -- Containers / DevOps
-    "dockerls",                       -- Dockerfile
+    "dockerls",                        -- Dockerfile
     "docker_compose_language_service", -- docker-compose.yml
     "docker_language_server",          -- Docker in general
 
@@ -440,7 +447,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 local util = require("lspconfig.util")
 vim.lsp.config("pyright", {
   capabilities = capabilities,
-  
+
 })
 pcall(function() vim.lsp.enable("pyright") end)
 
@@ -456,15 +463,16 @@ end
 -- conform formatting
 require("conform").setup({
   formatters_by_ft = {
-    python = { "ruff" , "black" }, -- conform will call the tools you have available
-    ["htmldjango"] = { "djlint" },
-    ["jinja.html"] = { "djlint" },
+    python = { "black" },
+    c      = { "clang_format" },
+    cpp    = { "clang_format" },
+    rust   = { "rustfmt" },
   },
 })
 
 -- Autoformat templates on save (tries conform, then falls back to djlint CLI)
 vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = {"*.j2","*.jinja","*.jinja2","*.html.j2","*.htmldjango","*.jinja"},
+  pattern = { "*.j2", "*.jinja", "*.jinja2", "*.html.j2", "*.htmldjango", "*.jinja" },
   callback = function()
     local ok_conf, conform = pcall(require, "conform")
     if ok_conf and conform then
@@ -477,9 +485,9 @@ vim.api.nvim_create_autocmd("BufWritePre", {
       if ok then vim.fn.winrestview(view) end
     end
   end,
-})-- optional: autoformat on save
+}) -- optional: autoformat on save
 vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = {"*.py"},
+  pattern = { "*.py" },
   callback = function() require("conform").format({ async = false }) end,
 })
 
@@ -504,15 +512,21 @@ cmp.setup({
     ['<C-Space>'] = cmp.mapping.complete(),
     ['<CR>'] = cmp.mapping.confirm({ select = true }),
     ['<Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then cmp.select_next_item()
-      elseif luasnip.expand_or_jumpable() then luasnip.expand_or_jump()
-      else fallback()
+      if cmp.visible() then
+        cmp.select_next_item()
+      elseif luasnip.expand_or_jumpable() then
+        luasnip.expand_or_jump()
+      else
+        fallback()
       end
     end, { 'i', 's' }),
     ['<S-Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then cmp.select_prev_item()
-      elseif luasnip.jumpable(-1) then luasnip.jump(-1)
-      else fallback()
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
       end
     end, { 'i', 's' }),
   },
@@ -529,7 +543,7 @@ cmp.setup({
 map('n', '<leader>ff', "<cmd>Telescope find_files<CR>")
 map('n', '<leader>fg', "<cmd>Telescope live_grep<CR>")
 map('n', '<leader>fb', "<cmd>Telescope buffers<CR>")
-map('n', '<leader>fh', "<cmd>Telescope help_tags<CR>")-- ======= Telescope + cmp
+map('n', '<leader>fh', "<cmd>Telescope help_tags<CR>") -- ======= Telescope + cmp
 -- ==== Prereqs ====
 -- Ensure these are installed on Arch:
 -- sudo pacman -S ripgrep fd
@@ -592,7 +606,7 @@ vim.keymap.set("n", "gi", function()
   end
 end, { desc = "Go to implementation (fallback to definition)" })
 vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "Show references" })
-vim.keymap.set("n", "gb", "<C-o>", { desc = "Go back" })  -- jump back
+vim.keymap.set("n", "gb", "<C-o>", { desc = "Go back" }) -- jump back
 
 local builtin = require("telescope.builtin")
 
@@ -609,10 +623,8 @@ end
 
 -- Map keys to run it
 vim.keymap.set("n", "<leader>as", function()
-  telescope_ast_grep(nil, { cwd = vim.g.nvim_start_dir })
+  telescope_ast_grep(nil, { cwd = vim.loop.cwd() })
 end, { desc = "AST-Grep structural search" })
-
-
 
 require("catppuccin").setup({
   flavour = "mocha", -- options: latte, frappe, macchiato, mocha
@@ -649,7 +661,7 @@ require("catppuccin").setup({
   end,
 
   integrations = {
-    lualine = true,         -- if using lualine, it can pick the catppuccin theme
+    lualine = true, -- if using lualine, it can pick the catppuccin theme
     telescope = true,
     nvimtree = true,
     cmp = true,
@@ -674,12 +686,12 @@ vim.o.fileencoding = "utf-8"
 -- ====== Keymaps ======
 -- Toggle Neo-tree with backtick
 --vim.keymap.set("n", "`", function()
-  --require("neo-tree.command").execute({ toggle = true, dir = vim.loop.cwd() })
+--require("neo-tree.command").execute({ toggle = true, dir = vim.loop.cwd() })
 --end, { desc = "Toggle file explorer" })
 
 -- Optional: leader+e alternative
 --vim.keymap.set("n", "<leader>e", function()
-  --require("neo-tree.command").execute({ toggle = true, dir = vim.loop.cwd() })
+--require("neo-tree.command").execute({ toggle = true, dir = vim.loop.cwd() })
 --end, { desc = "Toggle file explorer" })
 
 
@@ -746,7 +758,8 @@ end
 
 -- Map keys: keep backtick as toggle, map Shift+backtick (~) to focus-or-open
 vim.keymap.set("n", "`", neotree_toggle, { noremap = true, silent = true, desc = "Neo-tree: toggle" })
-vim.keymap.set("n", "~", neotree_smart_toggle, { noremap = true, silent = true, desc = "Neo-tree: focus if open, else open" })
+vim.keymap.set("n", "~", neotree_smart_toggle,
+  { noremap = true, silent = true, desc = "Neo-tree: focus if open, else open" })
 
 
 -- Normal mode: toggle comment on the current line
@@ -808,7 +821,7 @@ vim.keymap.set({ "v", "x" }, "<C-Space>", live_grep_visual, { desc = "Search sel
 vim.keymap.set({ "v", "x" }, "<leader>gs", live_grep_visual, { desc = "Search selected text (alt mapping)" })
 
 
-vim.api.nvim_create_autocmd({"BufReadPost","DiagnosticChanged"}, {
+vim.api.nvim_create_autocmd({ "BufReadPost", "DiagnosticChanged" }, {
   callback = function()
     if _G.inline_diag_enabled then
       vim.diagnostic.show()
@@ -845,6 +858,3 @@ vim.api.nvim_set_keymap('v', '<leader>p', '"_dP', { desc = "Paste without overwr
 
 -- Finished
 print('Neovim starter config loaded — enjoy coding in Rust!')
-
-
-

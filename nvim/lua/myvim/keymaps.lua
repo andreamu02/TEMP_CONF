@@ -1,25 +1,40 @@
--- ~/.config/nvim/lua/myvim/keymaps.lua
+-- lua/myvim/keymaps.lua
 
 local builtin_ok, builtin = pcall(require, "telescope.builtin")
-
--- helper locale
-local function map(mode, lhs, rhs, opts)
-  local options = { noremap = true, silent = true }
-  if opts then options = vim.tbl_extend('force', options, opts) end
-  vim.api.nvim_set_keymap(mode, lhs, rhs, options)
+if not builtin_ok then
+  builtin = nil
 end
 
--- Telescope (semplici)
-map('n', '<leader>ff', "<cmd>Telescope find_files<CR>")
-map('n', '<leader>fg', "<cmd>Telescope live_grep<CR>")
-map('n', '<leader>fb', "<cmd>Telescope buffers<CR>")
-map('n', '<leader>fh', "<cmd>Telescope help_tags<CR>")
+----------------------------------------------------------------------
+-- Telescope: <leader>f*
+----------------------------------------------------------------------
 
--- Jumplist
-vim.keymap.set("n", "<leader>jb", ":Telescope jumplist<CR>", { desc = "Jump back (jumplist)" })
+if builtin then
+  vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find files" })
+  vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Grep in project" })
+  vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Buffers" })
+  vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Help tags" })
+  vim.keymap.set("n", "<leader>jb", builtin.jumplist, { desc = "Jumplist" })
+else
+  vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { desc = "Find files" })
+  vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<CR>", { desc = "Grep in project" })
+  vim.keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { desc = "Buffers" })
+  vim.keymap.set("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { desc = "Help tags" })
+  vim.keymap.set("n", "<leader>jb", "<cmd>Telescope jumplist<CR>", { desc = "Jumplist" })
+end
 
--- LSP global nav (NB: questo `gd` sovrascrive quello in LspAttach)
-vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
+----------------------------------------------------------------------
+-- Git: <leader>g*
+----------------------------------------------------------------------
+
+vim.keymap.set("n", "<leader>gg", "<cmd>LazyGit<CR>", { desc = "LazyGit" })
+vim.keymap.set("n", "<leader>gb", "<C-o>", { desc = "Go back" })
+-- <leader>gB è in git-blame.nvim (plugins.lua)
+
+----------------------------------------------------------------------
+-- LSP "fallback" keys che non dipendono da LspAttach
+-- (la maggior parte dei tasti LSP è impostata in lsp.lua, in LspAttach)
+----------------------------------------------------------------------
 
 vim.keymap.set("n", "gi", function()
   local clients = vim.lsp.get_active_clients({ bufnr = 0 })
@@ -34,24 +49,25 @@ vim.keymap.set("n", "gi", function()
   if supports then
     vim.lsp.buf.implementation()
   else
-    vim.notify("Implementation not supported by attached server, falling back to definition", vim.log.levels.WARN)
+    vim.notify(
+      "Implementation not supported by attached server, falling back to definition",
+      vim.log.levels.WARN
+    )
     vim.lsp.buf.definition()
   end
 end, { desc = "Go to implementation (fallback to definition)" })
 
-vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "Show references" })
-vim.keymap.set("n", "gb", "<C-o>", { desc = "Go back" })
+----------------------------------------------------------------------
+-- AST-grep helper (per ora usa live_grep, è solo un wrapper)
+----------------------------------------------------------------------
 
--- AST grep wrapper (usa live_grep)
 local function telescope_ast_grep(_, opts)
-  if not builtin_ok then
-    vim.notify("Telescope not found!", vim.log.levels.WARN)
+  if not builtin then
+    vim.notify("Telescope not available", vim.log.levels.WARN)
     return
   end
   opts = opts or {}
-  local picker_opts = {
-    prompt_title = "AST-Grep",
-  }
+  local picker_opts = { prompt_title = "AST-Grep" }
   return builtin.live_grep(vim.tbl_extend("force", picker_opts, opts))
 end
 
@@ -59,12 +75,18 @@ vim.keymap.set("n", "<leader>as", function()
   telescope_ast_grep(nil, { cwd = vim.g.nvim_start_dir })
 end, { desc = "AST-Grep structural search" })
 
--- Comment.nvim
+----------------------------------------------------------------------
+-- Comment.nvim: Ctrl+/ (normale + visual)
+----------------------------------------------------------------------
+
 vim.keymap.set("n", "<C-/>", "gcc", { remap = true, desc = "Toggle comment line" })
 vim.keymap.set("v", "<C-/>", "gc", { remap = true, desc = "Toggle comment selection" })
 
+----------------------------------------------------------------------
 -- Telescope: Ctrl+Space / Alt+Space
-if builtin_ok then
+----------------------------------------------------------------------
+
+if builtin then
   vim.keymap.set("n", "<C-Space>", function()
     builtin.live_grep()
   end, { desc = "Search text in project (live_grep)" })
@@ -78,9 +100,20 @@ if builtin_ok then
   end, { desc = "Search text in project (live_grep fallback)" })
 end
 
--- Visual: live_grep su selezione
+vim.keymap.set("n", "<leader>fe", function()
+  require("telescope").extensions.file_browser.file_browser({
+    path = vim.fn.expand("%:p:h"),
+    select_buffer = true,
+    hidden = true,
+  })
+end, { desc = "File browser (Telescope)" })
+
+----------------------------------------------------------------------
+-- Visual → live_grep del testo selezionato
+----------------------------------------------------------------------
+
 local function live_grep_visual()
-  if not builtin_ok then
+  if not builtin then
     vim.notify("telescope.builtin not available", vim.log.levels.WARN)
     return
   end
@@ -88,6 +121,7 @@ local function live_grep_visual()
   local saved_reg = vim.fn.getreg('"')
   local saved_type = vim.fn.getregtype('"')
 
+  -- copia selezione in "z"
   pcall(vim.cmd, 'silent! normal! "zy')
   local text = vim.fn.getreg('z') or ""
   pcall(vim.fn.setreg, '"', saved_reg, saved_type)
@@ -104,7 +138,10 @@ end
 vim.keymap.set({ "v", "x" }, "<C-Space>", live_grep_visual, { desc = "Search selected text in project" })
 vim.keymap.set({ "v", "x" }, "<leader>gs", live_grep_visual, { desc = "Search selected text (alt mapping)" })
 
+----------------------------------------------------------------------
 -- Neo-tree toggle / smart focus
+----------------------------------------------------------------------
+
 local function find_neotree_win()
   for _, w in ipairs(vim.api.nvim_list_wins()) do
     local ok, ft = pcall(vim.api.nvim_buf_get_option, vim.api.nvim_win_get_buf(w), "filetype")
@@ -121,7 +158,6 @@ local function safe_neotree_execute(opts)
     pcall(neo_cmd.execute, opts)
     return true
   end
-
   if opts and opts.toggle then
     pcall(vim.cmd, "Neotree toggle")
     return true
@@ -157,14 +193,56 @@ local function neotree_smart_toggle()
   end
 end
 
-vim.keymap.set("n", "`", neotree_toggle, { noremap = true, silent = true, desc = "Neo-tree: toggle" })
-vim.keymap.set("n", "~", neotree_smart_toggle, { noremap = true, silent = true, desc = "Neo-tree: focus if open, else open" })
+vim.keymap.set("n", "`", neotree_toggle, { desc = "Neo-tree: toggle" })
+vim.keymap.set("n", "~", neotree_smart_toggle, { desc = "Neo-tree: focus if open, else open" })
 
+----------------------------------------------------------------------
 -- Clipboard / paste helpers
+----------------------------------------------------------------------
+
+-- Kitty: mappa la sequenza custom per copiare in system clipboard
 vim.api.nvim_set_keymap('v', '<Esc>[105;6u', '"+y', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('i', '<C-S-V>', '<C-R>+', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('v', '<leader>p', '"_dP', { desc = "Paste without overwriting register" })
+
+-- Ctrl+Shift+V → incolla da system clipboard in insert e command-line
+vim.keymap.set("i", "<C-S-V>", '<C-R>+', { noremap = true, silent = true, desc = "Paste from clipboard" })
+vim.keymap.set("c", "<C-S-V>", '<C-R>+', { noremap = true, silent = true, desc = "Paste from clipboard" })
+
+-- Visual + leader+p → incolla senza sovrascrivere il registro
+vim.keymap.set("v", "<leader>p", '"_dP', { desc = "Paste without overwriting register" })
+
+----------------------------------------------------------------------
+-- Ctrl+Left / Ctrl+Right → word motions (section by section)
+----------------------------------------------------------------------
+
+-- Normal mode: muovi di una parola a sinistra/destra
+vim.keymap.set("n", "<C-Left>", "b", { silent = true, desc = "Move left by word" })
+vim.keymap.set("n", "<C-Right>", "w", { silent = true, desc = "Move right by word" })
+
+-- Insert mode: usa <C-o> per eseguire il movimento in normal-mode
+vim.keymap.set("i", "<C-Left>", "<C-o>b", { silent = true, desc = "Move left by word" })
+vim.keymap.set("i", "<C-Right>", "<C-o>w", { silent = true, desc = "Move right by word" })
+
+----------------------------------------------------------------------
+-- Ctrl+Backspace → cancella parola precedente
+----------------------------------------------------------------------
+
+vim.keymap.set("i", "<C-BS>", "<C-w>", { noremap = true, silent = true, desc = "Delete previous word" })
+vim.keymap.set("c", "<C-BS>", "<C-w>", { noremap = true, silent = true })
+
+----------------------------------------------------------------------
+-- Undo tree: <leader>u
+----------------------------------------------------------------------
+
+vim.keymap.set("n", "<leader>u", "<cmd>UndotreeToggle<CR>", { desc = "Undo tree" })
+
+----------------------------------------------------------------------
+-- Markdown preview
+----------------------------------------------------------------------
+
+vim.keymap.set("n", "<leader>mp", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Markdown: toggle preview" })
+
 
 vim.keymap.set("n", "<leader>td", "<cmd>ToggleInlineDiagnostics<CR>", { desc = "Toggle inline diagnostics" })
 
-vim.keymap.set("n", "<leader>gg", "<cmd>LazyGit<CR>", { desc = "Open LazyGit" })
+
+vim.keymap.set("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<CR>", { desc = "Diagnostics (Trouble)" })

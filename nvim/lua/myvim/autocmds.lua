@@ -17,13 +17,8 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   end,
 })
 
-vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = { "*.py" },
-  callback = function() require("conform").format({ async = false }) end,
-})
-
 -- Inline diagnostics toggle
-_G.inline_diag_enabled = false
+_G.inline_diag_enabled = true
 
 local function update_inline_diags()
   local bufnr = 0 -- buffer corrente
@@ -57,4 +52,3 @@ vim.cmd [[
     autocmd TextYankPost * silent! lua vim.hl.on_yank{higroup="IncSearch", timeout=200}
   augroup end
 ]]
-

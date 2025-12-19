@@ -13,7 +13,7 @@ vim.o.backup = false
 vim.o.undodir = vim.fn.stdpath('data') .. '/undo'
 vim.o.undofile = true
 vim.fn.mkdir(vim.o.undodir, "p")
-vim.o.mouse = "r"
+vim.opt.shortmess:append("I")
 
 vim.o.encoding = "utf-8"
 vim.o.fileencoding = "utf-8"

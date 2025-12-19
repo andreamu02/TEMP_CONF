@@ -12,9 +12,9 @@ cmp.setup({
   },
 
   -- Finestre con bordo + doc bordata
- window = {
+  window = {
     completion = cmp.config.window.bordered({
-      side_padding = 1,  -- aumenta se vuoi più spazio sinistra/destra
+      side_padding = 1, -- aumenta se vuoi più spazio sinistra/destra
       winhighlight = "Normal:CmpPmenu,FloatBorder:CmpPmenuBorder,CursorLine:PmenuSel,Search:None",
     }),
     documentation = cmp.config.window.bordered({
@@ -73,4 +73,3 @@ cmp.setup({
     ghost_text = true,
   },
 })
-
