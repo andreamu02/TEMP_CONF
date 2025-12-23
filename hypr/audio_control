@@ -49,7 +49,6 @@ else
   fi
   if [ "$value" -eq "100" ]; then
     notify-send -a "vol-control" -i "$icon" --hint=int:value:"$value" -h "$SYNC" "$value%   " "$body"
-    echo ciao
   elif [ "$value" -lt "10" ]; then
     notify-send -a "vol-control" -i "$icon" --hint=int:value:"$value" -h "$SYNC" "$value% " "$body"
   else

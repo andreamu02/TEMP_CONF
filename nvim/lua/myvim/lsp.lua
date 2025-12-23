@@ -26,10 +26,69 @@ mason_lspconfig.setup({
     "efm",
   },
   automatic_installation = true,
+  automatic_enable = {
+    exclude = { "rust_analyzer", "efm" },
+  },
 })
 
 local cmp_nvim_lsp = require('cmp_nvim_lsp')
 local capabilities = cmp_nvim_lsp.default_capabilities()
+
+-- EFM (lint/format aggregator)
+do
+  local languages = {}
+  local function add(ft, tool)
+    languages[ft] = languages[ft] or {}
+    table.insert(languages[ft], tool)
+  end
+
+  -- shell
+  local ok_shellcheck, shellcheck = pcall(require, "efmls-configs.linters.shellcheck")
+  local ok_shfmt, shfmt = pcall(require, "efmls-configs.formatters.shfmt")
+  if ok_shellcheck then
+    add("sh", shellcheck)
+    add("bash", shellcheck)
+    add("zsh", shellcheck)
+  end
+  if ok_shfmt then
+    add("sh", shfmt)
+    add("bash", shfmt)
+    add("zsh", shfmt)
+  end
+
+  -- templates (optional)
+  local ok_djlint, djlint = pcall(require, "efmls-configs.formatters.djlint")
+  if ok_djlint then
+    add("htmldjango", djlint)
+    add("jinja", djlint)
+    add("jinja2", djlint)
+    add("jinja.html", djlint)
+  end
+
+  -- Only enable efm if we actually configured at least 1 language
+  if next(languages) ~= nil then
+    local efmls_config = {
+      filetypes = vim.tbl_keys(languages),
+      settings = {
+        rootMarkers = { ".git/" },
+        languages = languages,
+      },
+      init_options = {
+        documentFormatting = true,
+        documentRangeFormatting = true,
+      },
+    }
+
+    vim.lsp.config("efm", vim.tbl_extend("force", efmls_config, {
+      -- "-q" makes efm quieter (reduces stderr spam)
+      cmd = { "efm-langserver", "-q" },
+      capabilities = capabilities,
+    }))
+
+    pcall(function() vim.lsp.enable("efm") end)
+  end
+end
+
 
 vim.diagnostic.config({
   float = {
@@ -93,10 +152,21 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end
 
     -- ===== GOTO / hover base =====
-    map("n", "gd", "<cmd>Telescope lsp_definitions<CR>", "LSP: go to definition")
-    map("n", "gD", vim.lsp.buf.declaration, "LSP: go to declaration")
-    map("n", "gr", vim.lsp.buf.references, "LSP: references")
+    map("n", "gd", "<cmd>Telescope lsp_definitions<CR>", "LSP: definition")
+    map("n", "gD", "<cmd>Telescope lsp_declarations<CR>", "LSP: declaration")
+
+    -- Make references/impl/type-def all use Telescope
+    map("n", "gr", "<cmd>Telescope lsp_references<CR>", "LSP: references")
+    map("n", "grr", "<cmd>Telescope lsp_references<CR>", "LSP: references (alias)")
+    map("n", "gri", "<cmd>Telescope lsp_implementations<CR>", "LSP: implementations")
+    map("n", "grt", "<cmd>Telescope lsp_type_definitions<CR>", "LSP: type definition")
+
+
+    -- Rename is not a Telescope picker (it’s an input prompt)
+    map("n", "grn", vim.lsp.buf.rename, "LSP: rename")
+
     map("n", "K", vim.lsp.buf.hover, "LSP: hover")
+
 
     -- ===== Diagnostics base =====
     map("n", "<leader>d", vim.diagnostic.open_float, "Diagnostics: line")

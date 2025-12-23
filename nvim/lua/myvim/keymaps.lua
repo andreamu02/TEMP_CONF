@@ -37,25 +37,26 @@ vim.keymap.set("n", "<leader>gb", "<C-o>", { desc = "Go back" })
 ----------------------------------------------------------------------
 
 vim.keymap.set("n", "gi", function()
-  local clients = vim.lsp.get_active_clients({ bufnr = 0 })
+  local clients = vim.lsp.get_clients({ bufnr = 0 })
   local supports = false
+
   for _, client in ipairs(clients) do
-    if client.supports_method("textDocument/implementation") then
+    if client.supports_method and client:supports_method("textDocument/implementation") then
       supports = true
       break
     end
   end
 
   if supports then
-    vim.lsp.buf.implementation()
+    require("telescope.builtin").lsp_implementations()
   else
     vim.notify(
       "Implementation not supported by attached server, falling back to definition",
       vim.log.levels.WARN
     )
-    vim.lsp.buf.definition()
+    require("telescope.builtin").lsp_definitions()
   end
-end, { desc = "Go to implementation (fallback to definition)" })
+end, { desc = "Go to implementation (Telescope, fallback to definition)" })
 
 ----------------------------------------------------------------------
 -- AST-grep helper (per ora usa live_grep, è solo un wrapper)
@@ -100,6 +101,9 @@ if builtin then
   end, { desc = "Search text in project (live_grep fallback)" })
 end
 
+vim.keymap.set("n", "<leader>fr", "<cmd>Telescope resume<CR>", { desc = "Telescope: resume last picker" })
+
+
 vim.keymap.set("n", "<leader>fe", function()
   require("telescope").extensions.file_browser.file_browser({
     path = vim.fn.expand("%:p:h"),
@@ -143,14 +147,19 @@ vim.keymap.set({ "v", "x" }, "<leader>gs", live_grep_visual, { desc = "Search se
 ----------------------------------------------------------------------
 
 local function find_neotree_win()
-  for _, w in ipairs(vim.api.nvim_list_wins()) do
-    local ok, ft = pcall(vim.api.nvim_buf_get_option, vim.api.nvim_win_get_buf(w), "filetype")
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    local ok, ft = pcall(function()
+      return vim.api.nvim_get_option_value("filetype", { buf = buf })
+    end)
+
     if ok and ft and ft:match("neo%-tree") then
-      return w
+      return win
     end
   end
   return nil
 end
+
 
 local function safe_neotree_execute(opts)
   local ok, neo_cmd = pcall(require, "neo-tree.command")

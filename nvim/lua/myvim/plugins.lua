@@ -180,10 +180,14 @@ require('lazy').setup({
             },
           },
           on_attach = function(_, bufnr)
-            vim.keymap.set("n", "<leader>cs", function()
+            local function rust_code_action()
               vim.cmd.RustLsp("codeAction")
-            end, { buffer = bufnr, desc = "Rust: Code Actions (rust-analyzer)" })
+            end
 
+            vim.keymap.set({ "n", "v" }, "<leader>cs", rust_code_action, {
+              buffer = bufnr,
+              desc = "Rust: code actions (rust-analyzer)",
+            })
             vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = bufnr, desc = "Hover" })
           end,
         },
@@ -191,6 +195,12 @@ require('lazy').setup({
       vim.g.rustaceanvim = vim.tbl_deep_extend("keep", vim.g.rustaceanvim or {}, opts)
     end,
   },
+  {
+    "creativenull/efmls-configs-nvim",
+    version = "v1.*", -- recommended
+    dependencies = { "neovim/nvim-lspconfig" },
+  },
+
 
   {
     "echasnovski/mini.indentscope",
