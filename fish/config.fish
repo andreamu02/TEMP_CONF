@@ -26,8 +26,6 @@ set -gx FZF_DEFAULT_OPTS "--height=40% --layout=reverse --ansi \
 # --- zoxide (smart cd) ---
 zoxide init fish | source
 
-# fzf --fish | source
-
 # --- fzf keybindings (bash → fish) ---
 if test -f ~/.fzf/fish/key-bindings.fish
     source ~/.fzf/fish/key-bindings.fish
@@ -40,6 +38,9 @@ end
 
 # --- Functions (bash → fish) ---
 # Fuzzy select directory from zoxide
+
+
+
 function zfz
     set dir (zoxide query -l | fzf +s --tiebreak=index --preview='eza -la {}')
     if test -n "$dir"
@@ -70,13 +71,39 @@ set -gx HYPRSHOT_DIR ~/Documents/screenshots
 
 set -x PATH $PATH /home/andre/.local/share/gem/ruby/3.4.0/bin
 
-# --- Abbreviations ---
 abbr vim nvim
 abbr cd z
 abbr gc 'git clone'
+abbr docb 'docker compose up --build'
+abbr docr 'docker compose up'
+abbr docd 'docker compose down'
+abbr l 'eza --icons=always'
+abbr sshseed 'ssh -i ~/.ssh/seed_ubuntu seed@192.168.1.221'
+abbr bgrep 'batgrep'
+
+
 abbr fzd fzfcd
 
 abbr wifion 'nmcli radio wifi on'
 abbr wifioff 'nmcli radio wifi off'
 
 alias sur='su -s /usr/bin/fish'
+alias savvy='~/.savvy/SavvyCAN-x86_64.AppImage'
+alias cansingle='sudo ip link set can0 type can bitrate 500000 2>/dev/null; sudo ip link set up can0'
+alias please='sudo'
+
+function redo --description 'Re-run last command with sudo (no double-sudo)'
+    # Get the last command from history
+    set -l last (history --max=1)
+
+    # Trim leading whitespace
+    set last (string trim --left $last)
+
+    # If it already starts with sudo, just re-run it
+    if string match -qr '^sudo(\s|$)' -- $last
+        eval $last
+    else
+        eval sudo $last
+    end
+end
+

@@ -1,122 +1,222 @@
-@define-color	rosewater  #f5e0dc;
-@define-color	rosewater-rgb  rgb(245, 224, 220);
-@define-color	flamingo  #f2cdcd;
-@define-color	flamingo-rgb  rgb(242, 205, 205);
-@define-color	pink  #f5c2e7;
-@define-color	pink-rgb  rgb(245, 194, 231);
-@define-color	mauve  #cba6f7;
-@define-color	mauve-rgb  rgb(203, 166, 247);
-@define-color	red  #f38ba8;
-@define-color	red-rgb  rgb(243, 139, 168);
-@define-color	maroon  #eba0ac;
-@define-color	maroon-rgb  rgb(235, 160, 172);
-@define-color	peach  #fab387;
-@define-color	peach-rgb  rgb(250, 179, 135);
-@define-color	yellow  #f9e2af;
-@define-color	yellow-rgb  rgb(249, 226, 175);
-@define-color	green  #a6e3a1;
-@define-color	green-rgb  rgb(166, 227, 161);
-@define-color	teal  #94e2d5;
-@define-color	teal-rgb  rgb(148, 226, 213);
-@define-color	sky  #89dceb;
-@define-color	sky-rgb  rgb(137, 220, 235);
-@define-color	sapphire  #74c7ec;
-@define-color	sapphire-rgb  rgb(116, 199, 236);
-@define-color	blue  #89b4fa;
-@define-color	blue-rgb  rgb(137, 180, 250);
-@define-color	lavender  #b4befe;
-@define-color	lavender-rgb  rgb(180, 190, 254);
-@define-color	text  #cdd6f4;
-@define-color	text-rgb  rgb(205, 214, 244);
-@define-color	subtext1  #bac2de;
-@define-color	subtext1-rgb  rgb(186, 194, 222);
-@define-color	subtext0  #a6adc8;
-@define-color	subtext0-rgb  rgb(166, 173, 200);
-@define-color	overlay2  #9399b2;
-@define-color	overlay2-rgb  rgb(147, 153, 178);
-@define-color	overlay1  #7f849c;
-@define-color	overlay1-rgb  rgb(127, 132, 156);
-@define-color	overlay0  #6c7086;
-@define-color	overlay0-rgb  rgb(108, 112, 134);
-@define-color	surface2  #585b70;
-@define-color	surface2-rgb  rgb(88, 91, 112);
-@define-color	surface1  #45475a;
-@define-color	surface1-rgb  rgb(69, 71, 90);
-@define-color	surface0  #313244;
-@define-color	surface0-rgb  rgb(49, 50, 68);
-@define-color	base  #1e1e2e;
-@define-color	base-rgb  rgb(30, 30, 46);
-@define-color	mantle  #181825;
-@define-color	mantle-rgb  rgb(24, 24, 37);
-@define-color	crust  #11111b;
-@define-color	crust-rgb  rgb(17, 17, 27);
+/*
+  Rewritten wofi CSS
+  - Removes layout-shifting margins
+  - Uses padding/gap, reserves scrollbar gutter, limits sizes
+  - Keeps your original color definitions (from catppuccin-style palette)
+  - Safe transitions (don't animate layout-affecting properties)
+*/
 
+@define-color rosewater #f5e0dc;
+@define-color rosewater-rgb rgb(245, 224, 220);
+@define-color flamingo #f2cdcd;
+@define-color flamingo-rgb rgb(242, 205, 205);
+@define-color pink #f5c2e7;
+@define-color pink-rgb rgb(245, 194, 231);
+@define-color mauve #cba6f7;
+@define-color mauve-rgb rgb(203, 166, 247);
+@define-color red #f38ba8;
+@define-color red-rgb rgb(243, 139, 168);
+@define-color maroon #eba0ac;
+@define-color maroon-rgb rgb(235, 160, 172);
+@define-color peach #fab387;
+@define-color peach-rgb rgb(250, 179, 135);
+@define-color yellow #f9e2af;
+@define-color yellow-rgb rgb(249, 226, 175);
+@define-color green #a6e3a1;
+@define-color green-rgb rgb(166, 227, 161);
+@define-color teal #94e2d5;
+@define-color teal-rgb rgb(148, 226, 213);
+@define-color sky #89dceb;
+@define-color sky-rgb rgb(137, 220, 235);
+@define-color sapphire #74c7ec;
+@define-color sapphire-rgb rgb(116, 199, 236);
+@define-color blue #89b4fa;
+@define-color blue-rgb rgb(137, 180, 250);
+@define-color lavender #b4befe;
+@define-color lavender-rgb rgb(180, 190, 254);
+@define-color text #cdd6f4;
+@define-color text-rgb rgb(205, 214, 244);
+@define-color subtext1 #bac2de;
+@define-color subtext1-rgb rgb(186, 194, 222);
+@define-color subtext0 #a6adc8;
+@define-color subtext0-rgb rgb(166, 173, 200);
+@define-color overlay2 #9399b2;
+@define-color overlay2-rgb rgb(147, 153, 178);
+@define-color overlay1 #7f849c;
+@define-color overlay1-rgb rgb(127, 132, 156);
+@define-color overlay0 #6c7086;
+@define-color overlay0-rgb rgb(108, 112, 134);
+@define-color surface2 #585b70;
+@define-color surface2-rgb rgb(88, 91, 112);
+@define-color surface1 #45475a;
+@define-color surface1-rgb rgb(69, 71, 90);
+@define-color surface0 #313244;
+@define-color surface0-rgb rgb(49, 50, 68);
+@define-color base #1e1e2e;
+@define-color base-rgb rgb(30, 30, 46);
+@define-color mantle #181825;
+@define-color mantle-rgb rgb(24, 24, 37);
+@define-color crust #11111b;
+@define-color crust-rgb rgb(17, 17, 27);
+
+/* --------------------------
+   Base + global
+   -------------------------- */
+* {
+  box-sizing: border-box;
+  /* consistent box model */
+}
+
+/* Text and font sizing kept at your preference */
+:root,
 * {
   font-family: 'CaskaydiaCove Nerd Font', monospace;
   font-size: 18px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: @text;
 }
 
-/* Window */
+/* --------------------------
+   Window (root container)
+   -------------------------- */
 window {
-  margin: 0px;
+  margin: 0;
+  /* avoid external shifts */
   padding: 10px;
-  border: 2px solid @lavender;
+  /* internal spacing only */
   border-radius: 8px;
   background-color: @base;
+  border: 2px solid @lavender;
+  width: min(70vw, 800px);
+  /* stable width for consistent layout */
+  max-width: 90vw;
+  overflow: visible;
+  /* allow overflow for focus rings */
 }
 
-/* Inner Box */
-#inner-box {
-  margin: 5px;
-  padding: 10px;
-  border: none;
-  background-color: @base;
-}
-
-/* Outer Box */
-#outer-box {
-  margin: 5px;
-  padding: 10px;
-  border: none;
-  background-color: @base;
-}
-
-/* Scroll */
+/* --------------------------
+   Structural containers
+   Remove all external margins to stop layout jumps.
+   Use padding/gap for spacing instead of margins.
+   -------------------------- */
+#outer-box,
+#inner-box,
 #scroll {
-  margin: 0px;
-  padding: 10px;
+  margin: 0;
+  /* critical: remove margin collapse and shifts */
+  padding: 0;
+  /* keep containers tight; add padding on window / input */
+  background-color: transparent;
   border: none;
-  background-color: @base;
+  overflow: visible;
 }
 
-/* Input */
+/* Reserve space for scrollbar to avoid reflow when it appears */
+#scroll {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  overflow-y: auto;
+  /* scroll inside the list */
+  max-height: 60vh;
+  /* prevents the window from growing indefinitely */
+  scrollbar-gutter: stable;
+  /* reserve gutter for scrollbar if supported */
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  /* use gap for consistent spacing between entries */
+}
+
+/* --------------------------
+   Input area
+   -------------------------- */
 #input {
-  margin: 5px 20px;
-  padding: 10px;
-  border: none;
-  border-radius: 0.1em;
+  position: relative;
+  /* for ::after focus ring */
+  margin: 0;
+  /* no external margin to shift layout */
+  padding: 8px 12px;
+  /* internal spacing */
+  border-radius: 8px;
+  background-color: rgba(30, 30, 46, 0.0);
   color: @text;
-  background-color: @base;
+  outline: none;
+}
+
+/* subtle inset focus ring only when input actually focused */
+#input::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 2px rgba(243, 139, 168, 0.0);
+  /* default invisible */
+  transition: box-shadow 120ms ease;
+  z-index: 0;
+}
+
+#input:focus-within::after {
+  box-shadow: inset 0 0 0 2px rgba(243, 139, 168, 0.65);
+  /* visible on focus */
 }
 
 #input image {
-    border: none;
-    color: @red;
-}
-
-#input * {
-  outline: 4px solid @red;
-}
-
-/* Text */
-#text {
-  margin: 5px;
   border: none;
-  color: @text;
+  color: @red;
 }
 
+/* --------------------------
+   Entries (rows)
+   - Use padding + gap to keep layout stable
+   - Avoid transitions on margin/padding/width/height
+   -------------------------- */
 #entry {
-  background-color: @base;
+  position: relative;
+  /* for selection pseudo-element */
+  padding: 10px 12px;
+  /* internal spacing only */
+  margin: 0;
+  /* use parent gap instead */
+  border-radius: 8px;
+  background-color: transparent;
+  overflow: visible;
+  transition: background-color 120ms ease, color 120ms ease;
+  /* safe transitions */
+}
+
+/* ensure content sits above the decoration */
+#entry>* {
+  position: relative;
+  z-index: 2;
+}
+
+/* selection highlight drawn by pseudo-element so layout doesn't change */
+#entry::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: 0 0 0 0 rgba(180, 190, 254, 0.0);
+  transition: box-shadow 120ms ease, transform 120ms ease, opacity 120ms ease;
+  opacity: 0;
+  z-index: 1;
+}
+
+/* selected state: ring + subtle background tint */
+#entry:selected::before {
+  box-shadow: 0 0 0 2px rgba(180, 190, 254, 0.95);
+  opacity: 1;
+}
+
+#entry:selected {
+  background-color: rgba(116, 199, 236, 0.05);
+}
+
+#entry:selected #text {
+  color: @mauve;
 }
 
 #entry arrow {
@@ -124,15 +224,49 @@ window {
   color: @lavender;
 }
 
-/* Selected Entry */
-#entry:selected {
-  border: 0.11em solid @lavender;
-}
-
-#entry:selected #text {
-  color: @mauve;
-}
-
 #entry:drop(active) {
   background-color: @lavender;
 }
+
+/* remove outlines/borders inside input and entries */
+#input *,
+#entry * {
+  outline: none;
+  border: none;
+}
+
+/* helpers */
+#text {
+  margin: 0;
+  /* remove vertical margins that caused shifts */
+  padding: 0;
+  /* let parent handle spacing */
+  color: @text;
+  line-height: 1.2;
+}
+
+/* ensure the entry ring isn't clipped by the window edge */
+window,
+#outer-box,
+#inner-box {
+  overflow: visible;
+}
+
+/* safety: ensure box-sizing consistent across key elements */
+window,
+#outer-box,
+#inner-box,
+#scroll,
+#entry,
+#input {
+  box-sizing: border-box;
+}
+
+/* Optional: small visual debugging helpers (uncomment while testing) */
+/*
+window { outline: 2px dashed rgba(255,0,0,0.12); }
+#outer-box { outline: 1px dashed rgba(0,255,0,0.08); }
+#scroll { outline: 1px dashed rgba(0,0,255,0.06); }
+*/
+
+/* End of stylesheet */
